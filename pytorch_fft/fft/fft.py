@@ -1,6 +1,6 @@
 # functions/fft.py
 import torch
-from _ext import th_fft
+from .._ext import th_fft
 
 def fft2(X): 
     assert X.dim() == 3
