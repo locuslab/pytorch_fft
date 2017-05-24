@@ -4,8 +4,8 @@ from torch.utils.ffi import create_extension
 
 this_file = os.path.dirname(__file__)
 
-sources = ['pytorch_fft/src/th_fft.c']
-headers = ['pytorch_fft/src/th_fft.h']
+sources = []
+headers = []
 defines = []
 with_cuda = False
 
