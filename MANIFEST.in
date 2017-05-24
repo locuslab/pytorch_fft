@@ -1,1 +1,2 @@
 include build.py
+recursive-include pytorch_fft/src *
