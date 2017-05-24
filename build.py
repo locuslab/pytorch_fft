@@ -18,6 +18,7 @@ if torch.cuda.is_available():
 
 ffi = create_extension(
     'pytorch_fft._ext.th_fft',
+    package=True,
     headers=headers,
     sources=sources,
     define_macros=defines,
