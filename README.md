@@ -14,9 +14,8 @@ This package is on PyPi. Install with `pip install pytorch-fft`.
 
 + From the `pytorch_fft.fft` module, you can use `fft2` and `ifft2` to do the forward
 and backward FFT transformations. 
-+ The input tensors are required to be 3D tensors of dimension `batch x row x col`
-where `batch` is the number of FFT transformations, and `row x col` are the dimensions
-of the input to each transformation. 
++ The input tensors are required to have >= 3 dimensions (n1 x ... x nk x row x col)
+where `n1 x ... x nk` is the batch of FFT transformations, and `row x col` are the dimension of each transformation. 
 
 ```Python
 import torch
