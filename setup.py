@@ -12,7 +12,7 @@ setup(
     version="0.3",
     description="A PyTorch wrapper for CUDA FFTs",
     url="https://github.com/locuslab/pytorch_fft",
-    author="XYZ",
+    author="Eric Wong",
     author_email="ericwong@cs.cmu.edu",
     # Require cffi.
     install_requires=["cffi>=1.0.0"],
