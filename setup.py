@@ -9,7 +9,7 @@ this_file = os.path.dirname(__file__)
 
 setup(
     name="pytorch_fft",
-    version="0.4",
+    version="0.5",
     description="A PyTorch wrapper for CUDA FFTs",
     url="https://github.com/locuslab/pytorch_fft",
     author="Eric Wong",
