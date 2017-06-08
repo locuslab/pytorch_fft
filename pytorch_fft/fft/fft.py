@@ -7,6 +7,8 @@ def fft2(X_re, X_im):
         raise ValueError("Inputs must have at least 3 dimensions.")
     if not(X_re.is_cuda and X_im.is_cuda): 
         raise ValueError("Input must be a CUDA tensor.")
+    if not(X_re.is_contiguous() and X_im.is_contiguous()):
+        raise ValueError("Input must be contiguous.")
     if 'Float' in type(X_re).__name__: 
         Y1, Y2 = tuple(torch.zeros(*X_re.size()).cuda() for _ in range(2))
         th_fft.th_Float_fft2(X_re, X_im, Y1, Y2)
@@ -23,6 +25,8 @@ def ifft2(X_re, X_im):
         raise ValueError("Inputs must have at least 3 dimensions.")
     if not(X_re.is_cuda and X_im.is_cuda): 
         raise ValueError("Input must be a CUDA tensor.")
+    if not(X_re.is_contiguous() and X_im.is_contiguous()):
+        raise ValueError("Input must be contiguous.")
     N = X_re.size(-1)*X_re.size(-2)
     if 'Float' in type(X_re).__name__: 
         Y1, Y2 = tuple(torch.zeros(*X_re.size()).cuda() for _ in range(2))

@@ -13,10 +13,13 @@ def run_fft(x, z):
         assert np.allclose(y1.cpu().numpy(), y_np.real)
         assert np.allclose(y2.cpu().numpy(), y_np.imag)
 
+        assert np.allclose(y1[1,0].cpu().numpy(), nfft.fft2(x_np[1,0]).real)
+
         x0, z0 = cfft.ifft2(y1, y2)
         x0_np = nfft.ifft2(y_np)
         assert np.allclose(x0.cpu().numpy(), x0_np.real)
         assert np.allclose(z0.cpu().numpy(), x0_np.imag)
+
     else:
         print("Cuda not available, cannot test.")
 
