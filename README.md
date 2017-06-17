@@ -12,12 +12,15 @@ This package is on PyPi. Install with `pip install pytorch-fft`.
 
 ## Usage
 
-+ From the `pytorch_fft.fft` module, you can use `fft2` and `ifft2` to do the forward
-and backward FFT transformations. 
-+ The input tensors are required to have >= 3 dimensions (n1 x ... x nk x row x col)
-where `n1 x ... x nk` is the batch of FFT transformations, and `row x col` are the dimension of each transformation. 
++ From the `pytorch_fft.fft` module, you can use the following to do 
+foward and backward FFT transformation
+  + `fft` and `ifft` for 1D transformations
+  + `fft2` and `ifft2` for 2D transformations
+  + `fft3` and `ifft3` for 3D transformations
++ For an `d`-D transformation, the input tensors are required to have >= (d+1) dimensions (n1 x ... x nk x m1 x ... x md) where `n1 x ... x nk` is the batch of FFT transformations, and `m1 x ... x md` are the dimensions of the `d`-D transformation. `d` must be a number from 1 to 3. 
 
 ```Python
+# Example that does a batch of three 2D transformations of size 4 by 5. 
 import torch
 import pytorch_fft.fft as fft
 
@@ -31,9 +34,8 @@ fft.ifft2(B_real, B_imag) # equals (A_real, A_imag)
 for inverse FFT only flip the sign of the transform, but it is not a true inverse. 
 + This function is *NOT* a PyTorch autograd `Function`, and as a result is not backprop-able. 
 What this package allows you to do is call CuFFT on PyTorch Tensors. 
-+ The code currently only implements batched 2D transformation, for Complex 
-to Complex transformations. If you require a different number of dimensions, 
-the source code can be easily extended. 
++ The code currently implements only Complex 
+to Complex transformations, and not Real to Complex / Complex to Real transformations. 
 
 ## Repository contents
 - pytorch_fft/src: C source code

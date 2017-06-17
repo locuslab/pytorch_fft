@@ -15,13 +15,21 @@ int th_(THCTensor *input1, THCTensor *input2, THCTensor *output1, THCTensor *out
   // Get the tensor dimensions (batchsize, rows, cols). 
   int ndim = THCTensor_(nDimension)(state, input1);
   int batch = 1;
-  int i;
-  for(i=0; i<ndim-2; i++) {
+  int i, d;
+  for(i=0; i<ndim-cufft_rank; i++) {
     batch *= THCTensor_(size)(state, input1, i);
   }
-  int r = THCTensor_(size)(state, input1, ndim-2);
-  int c = THCTensor_(size)(state, input1, ndim-1);
 
+  // array of dimensions for fft of dimension cufft_rank
+  int dim_arr[cufft_rank];
+  // product of all dimensions
+  int dist=1;
+
+  for(i=ndim-cufft_rank; i<ndim; i++){
+    d = THCTensor_(size)(state, input1, i);
+    dim_arr[i-(ndim-cufft_rank)] = d;
+    dist *= d;
+  }
 
   // Get actual tensor data.
   real *input1_data = THCTensor_(data)(state, input1);
@@ -31,17 +39,17 @@ int th_(THCTensor *input1, THCTensor *input2, THCTensor *output1, THCTensor *out
 
   // Turn input into a complex array.
   cufft_complex *input_complex; 
-  cudaMalloc((void**)&input_complex, sizeof(cufft_complex)*batch*r*c);
+  cudaMalloc((void**)&input_complex, sizeof(cufft_complex)*batch*dist);
   if (cudaGetLastError() != cudaSuccess) {
     fprintf(stderr, "Cuda error: Failed to allocate\n");
     return -1;
   }
 
-  pair2complex(input1_data, input2_data, input_complex, batch*r*c);
+  pair2complex(input1_data, input2_data, input_complex, batch*dist);
 
   // Allocate the complex array to store the output
   cufft_complex *output_complex; 
-  cudaMalloc((void**)&output_complex, sizeof(cufft_complex)*batch*r*c);
+  cudaMalloc((void**)&output_complex, sizeof(cufft_complex)*batch*dist);
   if (cudaGetLastError() != cudaSuccess) {
     fprintf(stderr, "Cuda error: Failed to allocate\n");
     return -1;
@@ -49,14 +57,11 @@ int th_(THCTensor *input1, THCTensor *input2, THCTensor *output1, THCTensor *out
 
   // Make the fft plan. 
   cufftHandle plan;
-  int rank = 2;
-  int n[2] = {r, c};
-  int dist = r*c;
-  int nembed[] = {r, c};
+  int rank = cufft_rank;
   int stride = 1;
-  if (cufftPlanMany(&plan, rank, n, 
-                    nembed, stride, dist, 
-                    nembed, stride, dist, 
+  if (cufftPlanMany(&plan, rank, dim_arr, 
+                    dim_arr, stride, dist, 
+                    dim_arr, stride, dist, 
                     cufft_type, batch) != CUFFT_SUCCESS) {
     fprintf(stderr, "CUFFT error: Plan creation failed");
     return -1;
@@ -74,7 +79,7 @@ int th_(THCTensor *input1, THCTensor *input2, THCTensor *output1, THCTensor *out
   }
 
   // Copy the real and imaginary parts to the output pointers
-  complex2pair(output_complex, output1_data, output2_data, batch*r*c);
+  complex2pair(output_complex, output1_data, output2_data, batch*dist);
 
   cufftDestroy(plan);
   cudaFree(input_complex);

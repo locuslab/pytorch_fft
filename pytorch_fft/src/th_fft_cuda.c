@@ -9,63 +9,19 @@ extern THCState *state;
 #define pair2complex TH_CONCAT_2(Real, 2complex) 
 #define complex2pair TH_CONCAT_2(complex2, Real) 
 
-// Generate float FFTs
+#include "th_fft_generate_helpers.h"
 
-#define cufft_complex cufftComplex
-#define cufft_type CUFFT_C2C
-#define cufft_exec cufftExecC2C
+#define cufft_rank 1
+#include "th_fft_generate_float.h"
+#include "th_fft_generate_double.h"
+#undef cufft_rank
 
-#include "generic/helpers.c"
-#include "THCGenerateFloatType.h"
+#define cufft_rank 2
+#include "th_fft_generate_float.h"
+#include "th_fft_generate_double.h"
+#undef cufft_rank
 
-#define cufft_direction CUFFT_FORWARD
-#define func_name fft2
-
-#include "generic/th_fft_cuda.c"
-#include "THCGenerateFloatType.h"
-
-#undef cufft_direction
-#undef func_name
-
-#define cufft_direction CUFFT_INVERSE
-#define func_name ifft2
-
-#include "generic/th_fft_cuda.c"
-#include "THCGenerateFloatType.h"
-
-#undef cufft_direction
-#undef func_name
-
-#undef cufft_complex
-#undef cufft_type
-#undef cufft_exec
-
-// Generate Double FFTs
-#define cufft_complex cufftDoubleComplex
-#define cufft_type CUFFT_Z2Z
-#define cufft_exec cufftExecZ2Z
-
-#include "generic/helpers.c"
-#include "THCGenerateDoubleType.h"
-
-#define cufft_direction CUFFT_FORWARD
-#define func_name fft2
-
-#include "generic/th_fft_cuda.c"
-#include "THCGenerateDoubleType.h"
-
-#undef cufft_direction
-#undef func_name
-
-#define cufft_direction CUFFT_INVERSE
-#define func_name ifft2
-
-#include "generic/th_fft_cuda.c"
-#include "THCGenerateDoubleType.h"
-
-#undef cufft_direction
-#undef func_name
-
-#undef cufft_complex
-#undef cufft_type
-#undef cufft_exec
+#define cufft_rank 3
+#include "th_fft_generate_float.h"
+#include "th_fft_generate_double.h"
+#undef cufft_rank
