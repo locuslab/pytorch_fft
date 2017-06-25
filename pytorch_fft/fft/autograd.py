@@ -1,5 +1,5 @@
 import torch
-from fft import fft,ifft,fft2,ifft2,fft3,ifft3
+from .fft import fft,ifft,fft2,ifft2,fft3,ifft3
 
 
 class Fft(torch.autograd.Function):

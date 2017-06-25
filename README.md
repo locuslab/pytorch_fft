@@ -18,6 +18,11 @@ foward and backward FFT transformation
   + `fft2` and `ifft2` for 2D transformations
   + `fft3` and `ifft3` for 3D transformations
 + For an `d`-D transformation, the input tensors are required to have >= (d+1) dimensions (n1 x ... x nk x m1 x ... x md) where `n1 x ... x nk` is the batch of FFT transformations, and `m1 x ... x md` are the dimensions of the `d`-D transformation. `d` must be a number from 1 to 3. 
++ For autograd support, use the following functions in the
+`pytorch_fft.fft.autograd` module: 
+  + `Fft` and `Ifft` for 1D transformations
+  + `Fft2d` and Ifft2d` for 2D transformations
+  + `Fft3d` and `Ifft3d` for 3D transformations
 
 ```Python
 # Example that does a batch of three 2D transformations of size 4 by 5. 
@@ -49,9 +54,11 @@ print fx.grad, fy.grad
 ## Notes
 + This follows NumPy semantics, so `ifft2(fft2(x)) = x`. Note that CuFFT semantics 
 for inverse FFT only flip the sign of the transform, but it is not a true inverse. 
-+ This function is *NOT* a PyTorch autograd `Function`, and as a result is not backprop-able. 
-What this package allows you to do is call CuFFT on PyTorch Tensors. 
-+ The code currently implements only Complex 
++ The functions in the `pytorch_fft.fft` module do not implement 
+the PyTorch autograd `Function`, and are semantically and functionally like
+their numpy equivalents. Use `pytorch_fft.fft.autograd` if you want autograd
+functionality. 
++ The code currently implements only Complex
 to Complex transformations, and not Real to Complex / Complex to Real transformations. 
 
 ## Repository contents
