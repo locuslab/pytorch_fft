@@ -4,7 +4,7 @@ from .._ext import th_fft
 
 def _fft(X_re, X_im, f, rank):
     if not(X_re.dim() >= rank+1 and X_im.dim() >= rank+1): 
-        raise ValueError("Inputs must have at least 3 dimensions.")
+        raise ValueError("Inputs must have at least {} dimensions.".format(rank+1))
     if not(X_re.is_cuda and X_im.is_cuda): 
         raise ValueError("Input must be a CUDA tensor.")
     if not(X_re.is_contiguous() and X_im.is_contiguous()):
