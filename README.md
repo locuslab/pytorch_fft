@@ -22,6 +22,10 @@ real to complex / complex to real FFT transformations
   + `rfft` and `irfft` for 1D transformations
   + `rfft2` and `irfft2` for 2D transformations
   + `rfft3` and `irfft3` for 3D transformations
++ For an `d`-D transformation, the input tensors are required to have >= (d+1)
+  dimensions (n1 x ... x nk x m1 x ... x md) where `n1 x ... x nk` is the
+  batch of FFT transformations, and `m1 x ... x md` are the dimensions of the
+  `d`-D transformation. `d` must be a number from 1 to 3.
 + Finally, the module contains the following helper functions you may find
 useful
   + `reverse(X, group_size=1)` reverses the elements of a tensor and returns
@@ -33,7 +37,6 @@ useful
     with its redundant entries to match the output of a complex FFT.
 
 <!--
-+ For an `d`-D transformation, the input tensors are required to have >= (d+1) dimensions (n1 x ... x nk x m1 x ... x md) where `n1 x ... x nk` is the batch of FFT transformations, and `m1 x ... x md` are the dimensions of the `d`-D transformation. `d` must be a number from 1 to 3. 
 + For autograd support, use the following functions in the
 `pytorch_fft.fft.autograd` module: 
   + `Fft` and `Ifft` for 1D transformations
