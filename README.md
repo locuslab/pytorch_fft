@@ -22,6 +22,15 @@ real to complex / complex to real FFT transformations
   + `rfft` and `irfft` for 1D transformations
   + `rfft2` and `irfft2` for 2D transformations
   + `rfft3` and `irfft3` for 3D transformations
++ Finally, the module contains the following helper functions you may find
+useful
+  + `reverse(X, group_size=1)` reverses the elements of a tensor and returns
+    the result in a new tensor. Note that PyTorch does not current support
+    negative slicing, see this
+    [issue](https://github.com/pytorch/pytorch/issues/229). If a group size is
+    supplied, the elements will be reversed in groups of that size.
+  + `expand(X)` takes a tensor output of a real 2D or 3D FFT and expands it
+    with its redundant entries to match the output of a complex FFT.
 
 <!--
 + For an `d`-D transformation, the input tensors are required to have >= (d+1) dimensions (n1 x ... x nk x m1 x ... x md) where `n1 x ... x nk` is the batch of FFT transformations, and `m1 x ... x md` are the dimensions of the `d`-D transformation. `d` must be a number from 1 to 3. 
@@ -37,12 +46,17 @@ real to complex / complex to real FFT transformations
 import torch
 import pytorch_fft.fft as fft
 
-A_real, A_imag = torch.randn(3,4,5).cuda(), torch.zeros(3,4,5).cuda()
+A, zeros = torch.randn(3,4,5).cuda(), torch.zeros(3,4,5).cuda()
 B_real, B_imag = fft.fft2(A_real, A_imag)
-fft.ifft2(B_real, B_imag) # equals (A_real, A_imag)
+fft.ifft2(B_real, B_imag) # equals (A, zeros)
 
-B_real, B_imag = fft.rfft2(A_real) # is a truncated version which omits
+B_real, B_imag = fft.rfft2(A) # is a truncated version which omits
                                    # redundant entries
+
+reverse(torch.arange(0,6)) # outputs [5,4,3,2,1,0]
+reverse(torch.arange(0,6), 2) # outputs [4,5,2,3,0,1]
+
+expand(fft.rfft2(A)) # is equivalent to  fft.fft2(A, zeros)
 ```
 
 <!--
