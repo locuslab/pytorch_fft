@@ -3,6 +3,8 @@ import torch
 from .._ext import th_fft
 
 def _fft(X_re, X_im, f, rank):
+    if not(X_re.size() == X_im.size()): 
+        raise ValueError("Real and imaginary tensors must have the same dimension.")
     if not(X_re.dim() >= rank+1 and X_im.dim() >= rank+1): 
         raise ValueError("Inputs must have at least {} dimensions.".format(rank+1))
     if not(X_re.is_cuda and X_im.is_cuda): 
@@ -121,6 +123,8 @@ def rfft3(X):
     return _rfft(X, f, 3)
 
 def _irfft(X_re, X_im, f, rank):
+    if not(X_re.size() == X_im.size()): 
+        raise ValueError("Real and imaginary tensors must have the same dimension.")
     if not(X_re.dim() >= rank+1 and X_im.dim() >= rank+1): 
         raise ValueError("Inputs must have at least {} dimensions.".format(rank+1))
     if not(X_re.is_cuda and X_im.is_cuda): 
@@ -164,3 +168,43 @@ def irfft3(X_re, X_im):
     else: 
         raise NotImplementedError
     return _irfft(X_re, X_im, f, 3)
+
+def reverse(X, group_size=1): 
+    if not(X.is_cuda): 
+        raise ValueError("Input must be a CUDA tensor.")
+    if not(X.is_contiguous()):
+        raise ValueError("Input must be contiguous.")
+
+    if 'Float' in type(X).__name__:
+        f = th_fft.reverse_Float
+    elif 'Double' in type(X).__name__: 
+        f = th_fft.reverse_Double
+    else: 
+        raise NotImplementedError
+    Y = X.new(*X.size())
+    f(X,Y, group_size)
+    return Y
+
+
+def expand(X): 
+    N1, N2 = X.size(-2), X.size(-1)
+    N3 = (X.size(-1) - 1)*2
+    new_size = tuple(X.size())[:-1] + (N3,)
+    Y = X.new(*new_size).zero_()
+    i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(None,N2, None),)
+    Y[i] = X
+
+    i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(-(1+N3-N2),-1, None),)
+    X0 = X[i].contiguous()
+
+    X0 = reverse(X0)
+    i0 = (tuple(slice(None, None, None) for _ in range(X.dim() - 2)) + 
+              (slice(-1,None, None), slice(None, None, None)))
+    i1 = (tuple(slice(None, None, None) for _ in range(X.dim() - 2)) + 
+              (slice(None, -1, None), slice(None, None, None)))
+    X0 = torch.cat([X0[i0], X0[i1]], -2)
+    X0 = reverse(X0, N1*(N3-N2))
+
+    i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(N2, None, None),)
+    Y[i] = X0
+    return Y

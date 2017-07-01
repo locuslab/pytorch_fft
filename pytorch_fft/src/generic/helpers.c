@@ -24,4 +24,16 @@ void complex2pair(cufft_complex *a, real *b, real *c, int n)
                a_tmp+1, 2*sizeof(real), 
                sizeof(real), n, cudaMemcpyDeviceToDevice);
 }
+
+void reverse_(THCTensor *input, THCTensor *output, int group_size)
+{
+  real *input_data = THCTensor_(data)(state, input);
+  real *output_data = THCTensor_(data)(state, output); 
+  int n = THCTensor_(nElement)(state, input);
+
+  cudaMemcpy2D(output_data, sizeof(real)*group_size, 
+               input_data+n-group_size, -sizeof(real)*group_size,
+               sizeof(real)*group_size, n/group_size, cudaMemcpyDeviceToDevice);
+}
+
 #endif

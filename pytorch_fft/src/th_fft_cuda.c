@@ -8,6 +8,7 @@ extern THCState *state;
 #define th_ TH_CONCAT_4(th_, Real, _, func_name)
 #define pair2complex TH_CONCAT_2(Real, 2complex) 
 #define complex2pair TH_CONCAT_2(complex2, Real) 
+#define reverse_ TH_CONCAT_2(reverse_, Real)
 
 #include "th_fft_generate_helpers.h"
 
