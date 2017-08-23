@@ -59,7 +59,8 @@ B_real, B_imag = fft.rfft2(A) # is a truncated version which omits
 reverse(torch.arange(0,6)) # outputs [5,4,3,2,1,0]
 reverse(torch.arange(0,6), 2) # outputs [4,5,2,3,0,1]
 
-expand(fft.rfft2(A)) # is equivalent to  fft.fft2(A, zeros)
+expand(B_real) # is equivalent to  fft.fft2(A, zeros)[0]
+expand(B_imag, imag=True) # is equivalent to  fft.fft2(A, zeros)[1]
 ```
 
 <!--
