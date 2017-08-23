@@ -52,14 +52,16 @@ def test_r2c(_f1, _f2, _if1, _if2):
     run_r2c(x.double(), _f1, _f2, _if1, _if2, 1e-14)
 
 def test_expand(): 
-    X = torch.randn(2,2,4,4).cuda()
-    zeros = torch.zeros(2,2,4,4).cuda()
+    X = torch.randn(2,2,4,4).cuda().double()
+    zeros = torch.zeros(2,2,4,4).cuda().double()
     r1, r2 = cfft.rfft2(X)
     c1, c2 = cfft.fft2(X, zeros)
     assert np.allclose(cfft.expand(r1).cpu().numpy(), c1.cpu().numpy())
+    assert np.allclose(cfft.expand(r2, imag=True).cpu().numpy(), c2.cpu().numpy())
     r1, r2 = cfft.rfft3(X)
     c1, c2 = cfft.fft3(X, zeros)
     assert np.allclose(cfft.expand(r1).cpu().numpy(), c1.cpu().numpy())
+    assert np.allclose(cfft.expand(r2, imag=True).cpu().numpy(), c2.cpu().numpy())
 
 if __name__ == "__main__": 
     if torch.cuda.is_available():

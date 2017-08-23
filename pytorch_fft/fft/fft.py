@@ -186,7 +186,7 @@ def reverse(X, group_size=1):
     return Y
 
 
-def expand(X): 
+def expand(X, imag=False): 
     N1, N2 = X.size(-2), X.size(-1)
     N3 = (X.size(-1) - 1)*2
     new_size = tuple(X.size())[:-1] + (N3,)
@@ -206,5 +206,8 @@ def expand(X):
     X0 = reverse(X0, N1*(N3-N2))
 
     i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(N2, None, None),)
-    Y[i] = X0
+    if not imag: 
+        Y[i] = X0
+    else:
+        Y[i] = -X0
     return Y
