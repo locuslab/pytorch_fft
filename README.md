@@ -33,8 +33,9 @@ useful
     negative slicing, see this
     [issue](https://github.com/pytorch/pytorch/issues/229). If a group size is
     supplied, the elements will be reversed in groups of that size.
-  + `expand(X)` takes a tensor output of a real 2D or 3D FFT and expands it
-    with its redundant entries to match the output of a complex FFT.
+  + `expand(X, imag=False, odd=True)` takes a tensor output of a real 2D or 3D
+    FFT and expands it with its redundant entries to match the output of a
+    complex FFT.
 
 <!--
 + For autograd support, use the following functions in the

@@ -63,6 +63,13 @@ def test_expand():
     assert np.allclose(cfft.expand(r1).cpu().numpy(), c1.cpu().numpy())
     assert np.allclose(cfft.expand(r2, imag=True).cpu().numpy(), c2.cpu().numpy())
 
+    X = torch.randn(2,2,5,5).cuda().double()
+    zeros = torch.zeros(2,2,5,5).cuda().double()
+    r1, r2 = cfft.rfft3(X)
+    c1, c2 = cfft.fft3(X, zeros)
+    assert np.allclose(cfft.expand(r1, odd=True).cpu().numpy(), c1.cpu().numpy())
+    assert np.allclose(cfft.expand(r2, imag=True, odd=True).cpu().numpy(), c2.cpu().numpy())
+
 if __name__ == "__main__": 
     if torch.cuda.is_available():
         nfft3 = lambda x: nfft.fftn(x,axes=(1,2,3))

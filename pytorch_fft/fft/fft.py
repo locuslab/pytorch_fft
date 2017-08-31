@@ -186,15 +186,20 @@ def reverse(X, group_size=1):
     return Y
 
 
-def expand(X, imag=False): 
+def expand(X, imag=False, odd=False): 
     N1, N2 = X.size(-2), X.size(-1)
     N3 = (X.size(-1) - 1)*2
+    if odd: 
+        N3 += 1
     new_size = tuple(X.size())[:-1] + (N3,)
     Y = X.new(*new_size).zero_()
     i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(None,N2, None),)
     Y[i] = X
 
-    i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(-(1+N3-N2),-1, None),)
+    if odd:
+        i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(-(N3-N2),None, None),)
+    else:
+        i = tuple(slice(None, None, None) for _ in range(X.dim() - 1)) + (slice(-(1+N3-N2),-1, None),)
     X0 = X[i].contiguous()
 
     X0 = reverse(X0)
