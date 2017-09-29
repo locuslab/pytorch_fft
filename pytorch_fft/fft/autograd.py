@@ -7,10 +7,8 @@ class Fft(torch.autograd.Function):
         return fft(X_re, X_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        N = grad_output_re.size(-1)
-        gr, gi = ifft(grad_output_re,-grad_output_im)
-        gr, gi = gr * N, -gi * N
-        return gr,gi
+        gr, gi = fft(grad_output_re, -grad_output_im)
+        return gr, -gi
 
 
 class Ifft(torch.autograd.Function):
@@ -19,9 +17,8 @@ class Ifft(torch.autograd.Function):
         return ifft(k_re, k_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        gr, gi = fft(grad_output_re,-grad_output_im)
-        gr, gi = gr, -gi
-        return gr, gi
+        gr, gi = ifft(grad_output_re, -grad_output_im)
+        return gr, -gi
 
 
 class Fft2d(torch.autograd.Function):
