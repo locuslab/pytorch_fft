@@ -2,6 +2,7 @@ import torch
 torch.manual_seed(0)
 # from _ext import th_fft
 import pytorch_fft.fft as cfft
+import pytorch_fft.fft.autograd as afft
 import numpy as np
 import numpy.fft as nfft
 
@@ -70,6 +71,34 @@ def test_expand():
     assert np.allclose(cfft.expand(r1, odd=True).cpu().numpy(), c1.cpu().numpy())
     assert np.allclose(cfft.expand(r2, imag=True, odd=True).cpu().numpy(), c2.cpu().numpy())
 
+def create_complex_var(*args):
+    return (torch.autograd.Variable(torch.randn(*args).double().cuda(), requires_grad=True),
+            torch.autograd.Variable(torch.randn(*args).double().cuda(), requires_grad=True))
+
+def test_fft_gradcheck():
+    invar = create_complex_var(5,10)
+    assert torch.autograd.gradcheck(afft.Fft(), invar)
+
+def test_ifft_gradcheck():
+    invar = create_complex_var(5,10)
+    assert torch.autograd.gradcheck(afft.Ifft(), invar)
+
+def test_fft2d_gradcheck():
+    invar = create_complex_var(5,5,5)
+    assert torch.autograd.gradcheck(afft.Fft2d(), invar)
+
+def test_ifft2d_gradcheck():
+    invar = create_complex_var(5,5,5)
+    assert torch.autograd.gradcheck(afft.Ifft2d(), invar)
+
+def test_fft3d_gradcheck():
+    invar = create_complex_var(5,3,3,3)
+    assert torch.autograd.gradcheck(afft.Fft3d(), invar)
+
+def test_ifft3d_gradcheck():
+    invar = create_complex_var(5,3,3,3)
+    assert torch.autograd.gradcheck(afft.Ifft3d(), invar)
+
 if __name__ == "__main__": 
     if torch.cuda.is_available():
         nfft3 = lambda x: nfft.fftn(x,axes=(1,2,3))
@@ -95,5 +124,11 @@ if __name__ == "__main__":
             test_r2c(*args)
 
         test_expand()
+        test_fft_gradcheck()
+        test_ifft_gradcheck()
+        test_fft2d_gradcheck()
+        test_ifft2d_gradcheck()
+        test_fft3d_gradcheck()
+        test_ifft3d_gradcheck()
     else:
         print("Cuda not available, cannot test.")
