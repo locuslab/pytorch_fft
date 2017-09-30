@@ -36,14 +36,12 @@ useful
   + `expand(X, imag=False, odd=True)` takes a tensor output of a real 2D or 3D
     FFT and expands it with its redundant entries to match the output of a
     complex FFT.
-
-<!--
 + For autograd support, use the following functions in the
 `pytorch_fft.fft.autograd` module: 
   + `Fft` and `Ifft` for 1D transformations
-  + `Fft2d` and Ifft2d` for 2D transformations
+  + `Fft2d` and `Ifft2d` for 2D transformations
   + `Fft3d` and `Ifft3d` for 3D transformations
--->
+
 
 ```Python
 # Example that does a batch of three 2D transformations of size 4 by 5. 
@@ -64,7 +62,7 @@ expand(B_real) # is equivalent to  fft.fft2(A, zeros)[0]
 expand(B_imag, imag=True) # is equivalent to  fft.fft2(A, zeros)[1]
 ```
 
-<!--
+
 ```Python
 # Example that uses the autograd for 2D fft:
 import torch
@@ -75,13 +73,14 @@ import numpy as np
 f = fft.Fft2d()
 invf= fft.Ifft2d()
 
-fx, fy = Variable(torch.Tensor(np.arange(100).reshape((1,1,10,10))).cuda(), requires_grad=True), Variable(torch.zeros(1, 1, 10, 10).cuda(),requires_grad=True)
+fx, fy = (Variable(torch.arange(0,100).view((1,1,10,10)).cuda(), requires_grad=True), 
+          Variable(torch.zeros(1, 1, 10, 10).cuda(),requires_grad=True))
 k1,k2 = f(fx,fy)
 z = k1.sum() + k2.sum()
 z.backward()
-print fx.grad, fy.grad
+print(fx.grad, fy.grad)
 ```
--->
+
 ## Notes
 + This follows NumPy semantics and behavior, so `ifft2(fft2(x)) = x`. Note
   that CuFFT semantics for inverse FFT only flip the sign of the transform,
@@ -93,17 +92,13 @@ print fx.grad, fy.grad
 + The functions in the `pytorch_fft.fft` module do not implement the PyTorch
   autograd `Function`, and are semantically and functionally like their numpy
   equivalents.
-+ Autograd functionality is currently experimental in the `autograd` module
-  and is currently untested.
-
-<!-- `pytorch_fft.fft.autograd` if you want autograd
-functionality. -->
++ Autograd functionality is in the `pytorch_fft.fft.autograd` module.
 
 ## Repository contents
 - pytorch_fft/src: C source code
 - pytorch_fft/fft: Python convenience wrapper
 - build.py: compilation file
-- test.py: tests against NumPy FFTs
+- test.py: tests against NumPy FFTs and Autograd checks
 
 ## Issues and Contributions
 
