@@ -7,9 +7,7 @@ class Fft(torch.autograd.Function):
         return fft(X_re, X_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        N = grad_output_re.size(-1)
-        gr, gi = ifft(grad_output_re,-grad_output_im)
-        gr, gi = gr * N, -gi * N
+        gi, gr = fft(grad_output_im,grad_output_re)
         return gr,gi
 
 
@@ -19,8 +17,7 @@ class Ifft(torch.autograd.Function):
         return ifft(k_re, k_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        gr, gi = fft(grad_output_re,-grad_output_im)
-        gr, gi = gr, -gi
+        gi, gr = ifft(grad_output_im,grad_output_re)
         return gr, gi
 
 
@@ -29,9 +26,7 @@ class Fft2d(torch.autograd.Function):
         return fft2(X_re, X_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        N = grad_output_re.size(-1) * grad_output_re.size(-2)
-        gr, gi = ifft2(grad_output_re,-grad_output_im)
-        gr, gi = gr * N, -gi * N
+        gi, gr = fft2(grad_output_im,grad_output_re)
         return gr,gi
 
 
@@ -41,8 +36,7 @@ class Ifft2d(torch.autograd.Function):
         return ifft2(k_re, k_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        gr, gi = fft2(grad_output_re,-grad_output_im)
-        gr, gi = gr, -gi
+        gi, gr = ifft2(grad_output_im,grad_output_re)
         return gr, gi
 
 
@@ -51,9 +45,7 @@ class Fft3d(torch.autograd.Function):
         return fft3(X_re, X_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        N = grad_output_re.size(-1) * grad_output_re.size(-2) * grad_output_re.size(-3)
-        gr, gi = ifft3(grad_output_re,-grad_output_im)
-        gr, gi = gr * N, -gi * N
+        gi, gr = fft3(grad_output_im,grad_output_re)
         return gr,gi
 
 
@@ -63,6 +55,5 @@ class Ifft3d(torch.autograd.Function):
         return ifft3(k_re, k_im)
 
     def backward(self, grad_output_re, grad_output_im):
-        gr, gi = fft3(grad_output_re,-grad_output_im)
-        gr, gi = gr, -gi
+        gi, gr = ifft3(grad_output_im,grad_output_re)
         return gr, gi
