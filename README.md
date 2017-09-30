@@ -48,7 +48,7 @@ useful
 import torch
 import pytorch_fft.fft as fft
 
-A, zeros = torch.randn(3,4,5).cuda(), torch.zeros(3,4,5).cuda()
+A_real, A_imag = torch.randn(3,4,5).cuda(), torch.zeros(3,4,5).cuda()
 B_real, B_imag = fft.fft2(A_real, A_imag)
 fft.ifft2(B_real, B_imag) # equals (A, zeros)
 
