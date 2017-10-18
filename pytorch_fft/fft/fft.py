@@ -216,3 +216,12 @@ def expand(X, imag=False, odd=False):
     else:
         Y[i] = -X0
     return Y
+
+def roll_n(X, axis, n):
+    f_idx = tuple(slice(None, None, None) if i != axis else slice(0,n,None) 
+                  for i in range(X.dim()))
+    b_idx = tuple(slice(None, None, None) if i != axis else slice(n,None,None)
+                  for i in range(X.dim()))
+    front = X[f_idx]
+    back = X[b_idx]
+    return torch.cat([back, front],axis)
