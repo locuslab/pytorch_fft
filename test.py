@@ -71,6 +71,9 @@ def test_expand():
     assert np.allclose(cfft.expand(r1, odd=True).cpu().numpy(), c1.cpu().numpy())
     assert np.allclose(cfft.expand(r2, imag=True, odd=True).cpu().numpy(), c2.cpu().numpy())
 
+def create_real_var(*args):
+    return (torch.autograd.Variable(torch.randn(*args).double().cuda(), requires_grad=True),)
+
 def create_complex_var(*args):
     return (torch.autograd.Variable(torch.randn(*args).double().cuda(), requires_grad=True),
             torch.autograd.Variable(torch.randn(*args).double().cuda(), requires_grad=True))
@@ -98,6 +101,39 @@ def test_fft3d_gradcheck():
 def test_ifft3d_gradcheck():
     invar = create_complex_var(5,3,3,3)
     assert torch.autograd.gradcheck(afft.Ifft3d(), invar)
+
+def test_rfft_gradcheck():
+    invar = create_real_var(5,10)
+    assert torch.autograd.gradcheck(afft.Rfft(), invar)
+
+    invar = create_real_var(5,11)
+    assert torch.autograd.gradcheck(afft.Rfft(), invar)
+
+def test_rfft2d_gradcheck():
+    invar = create_real_var(5,6,6)
+    assert torch.autograd.gradcheck(afft.Rfft2d(), invar)
+
+    invar = create_real_var(5,5,5)
+    assert torch.autograd.gradcheck(afft.Rfft2d(), invar)
+
+def test_rfft3d_gradcheck():
+    invar = create_real_var(5,4,4,4)
+    assert torch.autograd.gradcheck(afft.Rfft3d(), invar)
+
+    invar = create_real_var(5,3,3,3)
+    assert torch.autograd.gradcheck(afft.Rfft3d(), invar)
+
+def test_irfft_gradcheck():
+    invar = create_complex_var(5,11)
+    assert torch.autograd.gradcheck(afft.Irfft(), invar)
+
+def test_irfft2d_gradcheck():
+    invar = create_complex_var(5,5,5)
+    assert torch.autograd.gradcheck(afft.Irfft2d(), invar)
+
+def test_irfft3d_gradcheck():
+    invar = create_complex_var(5,3,3,3)
+    assert torch.autograd.gradcheck(afft.Irfft3d(), invar)
 
 if __name__ == "__main__": 
     if torch.cuda.is_available():
@@ -130,5 +166,12 @@ if __name__ == "__main__":
         test_ifft2d_gradcheck()
         test_fft3d_gradcheck()
         test_ifft3d_gradcheck()
+
+        test_rfft_gradcheck()
+        test_irfft_gradcheck()
+        test_rfft2d_gradcheck()
+        test_irfft2d_gradcheck()
+        test_rfft3d_gradcheck()
+        test_irfft3d_gradcheck()
     else:
         print("Cuda not available, cannot test.")
