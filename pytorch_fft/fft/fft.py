@@ -122,7 +122,7 @@ def rfft3(X):
         raise NotImplementedError
     return _rfft(X, f, 3)
 
-def _irfft(X_re, X_im, f, rank):
+def _irfft(X_re, X_im, f, rank, N, normalize):
     if not(X_re.size() == X_im.size()): 
         raise ValueError("Real and imaginary tensors must have the same dimension.")
     if not(X_re.dim() >= rank+1 and X_im.dim() >= rank+1): 
@@ -132,42 +132,52 @@ def _irfft(X_re, X_im, f, rank):
     if not(X_re.is_contiguous() and X_im.is_contiguous()):
         raise ValueError("Input must be contiguous.")
 
-    # raise NotImplementedError
-    N = (X_re.size(-1) - 1)*2
+    input_size = X_re.size(-1)
+
+    if N is not None:
+        if input_size != int(N/2) + 1:
+            raise ValueError("Input size must be equal to n/2 + 1")
+    else:
+        N = (X_re.size(-1) - 1)*2
+
     new_size = tuple(X_re.size())[:-1] + (N,)
     Y = X_re.new(*new_size).zero_()
     f(X_re, X_im, Y)
-    M = 1
-    for i in range(rank): 
-        M *= new_size[-(i+1)]
-    return Y/M
 
-def irfft(X_re, X_im): 
+    if normalize:
+        M = 1
+        for i in range(rank):
+            M *= new_size[-(i+1)]
+        return Y/M
+    else:
+        return Y
+
+def irfft(X_re, X_im, n=None, normalize=True):
     if 'Float' in type(X_re).__name__ :
         f = th_fft.th_Float_irfft1
     elif 'Double' in type(X_re).__name__: 
         f = th_fft.th_Double_irfft1
     else: 
         raise NotImplementedError
-    return _irfft(X_re, X_im, f, 1)
+    return _irfft(X_re, X_im, f, 1, n, normalize)
 
-def irfft2(X_re, X_im): 
+def irfft2(X_re, X_im, n=None, normalize=True):
     if 'Float' in type(X_re).__name__ :
         f = th_fft.th_Float_irfft2
     elif 'Double' in type(X_re).__name__: 
         f = th_fft.th_Double_irfft2
     else: 
         raise NotImplementedError
-    return _irfft(X_re, X_im, f, 2)
+    return _irfft(X_re, X_im, f, 2, n, normalize)
 
-def irfft3(X_re, X_im): 
+def irfft3(X_re, X_im, n=None, normalize=True):
     if 'Float' in type(X_re).__name__ :
         f = th_fft.th_Float_irfft3
     elif 'Double' in type(X_re).__name__: 
         f = th_fft.th_Double_irfft3
     else: 
         raise NotImplementedError
-    return _irfft(X_re, X_im, f, 3)
+    return _irfft(X_re, X_im, f, 3, n, normalize)
 
 def reverse(X, group_size=1): 
     if not(X.is_cuda): 
