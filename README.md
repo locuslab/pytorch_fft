@@ -6,6 +6,11 @@
 *A package that provides a PyTorch C extension for performing batches of 2D CuFFT 
 transformations, by [Eric Wong](https://github.com/riceric22)*
 
+Update: FFT functionality is now officially in PyTorch 0.4, see the 
+documentation [here](https://pytorch.org/docs/0.4.0/torch.html?highlight=fft#torch.fft). 
+This repository is only useful for older versions of PyTorch, and will no longer 
+be updated. 
+
 ## Installation
 
 This package is on PyPi. Install with `pip install pytorch-fft`. 
